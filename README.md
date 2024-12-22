@@ -351,14 +351,15 @@ There are two symmetrical update rules, one for $Q_1(s, a)$ and the other for $Q
 from them randomly. These update rules are
 
 $${\begin{align}
-  Q_{1,n+1}(s_t, a_t) &= Q_{1,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{2,n}(s_{t+1}, \arg \max_a Q_{1,n}(s_{t+1}, a)) - Q_{1,n}(s_t, a_t)] \notag &\\
-  Q_{2,n+1}(s_t, a_t) &= Q_{2,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{1,n}(s_{t+1}, \arg \max_a Q_{2,n}(s_{t+1}, a)) - Q_{2,n}(s_t, a_t)] \notag &\\
+  Q_{1,n+1}(s_t, a_t) &= Q_{1,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{2,n}(s_{t+1}, \arg \max_a Q_{1,n}(s_{t+1}, a)) - Q_{1,n}(s_t, a_t)], \notag &\\
+  Q_{2,n+1}(s_t, a_t) &= Q_{2,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{1,n}(s_{t+1}, \arg \max_a Q_{2,n}(s_{t+1}, a)) - Q_{2,n}(s_t, a_t)], \notag &\\
   &\text{where } \alpha \in (0, 1] \notag &\\
 \end{align}}$$
 
 $${\begin{align}
   b(s_t) = \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim b(a_t \vert s_t) = (1 - \epsilon) \cdot \text{softmax($Q_1(s_t, a)+Q_2(s_t, a)$)} + \frac{\epsilon}{\vert A(s_t) \vert} \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim b(a_t \vert s_t) = (1 - \epsilon) \cdot softmax(s_t, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
+    &\text{where } softmax(s_t, a) = \frac{e^{Q_1(s_t, a)+Q_2(s_t, a)}}{\sum_b e^{Q_1(s_t, b)+Q_2(s_t, b)}}, b \in A(s_t), \notag &\\
     &\text{$\epsilon$-greedy: } a_t \thicksim b(a_t \vert s_t) = \begin{cases}
       1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_1(s_t, a)+Q_2(s_t, a) \notag &\\
       \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t \neq \arg \max_a Q_1(s_t, a)+Q_2(s_t, a) \notag
@@ -440,7 +441,8 @@ The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t
 $${\begin{align}
   G_{t+n:t+n} &= Q_{t+n-1}(s_{t+1}, a_{t+1}), \text{ where } a_{t+1} = \pi(s_{t+1}) \notag &\\
   \pi(s_{t+1}) &= \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot \text{softmax($Q_{t+n-1}(s_{t+1}, a)$)} + \frac{\epsilon}{\vert A(s_t) \vert} \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
+    &\text{where } softmax(s_{t+1}, a) = \frac{e^{Q_{t+n-1(s_{t+1}, a)}}}{\sum_b e^{Q_{t+n-1}(s_{t+1}, b)}}, b \in A(s_{t+1}), \notag &\\
     &\text{$\epsilon$-greedy: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = \begin{cases}
       1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag &\\
       \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag
@@ -486,7 +488,8 @@ The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t
 $${\begin{align}
   G_{t+n:t+n} &= \sum_a \pi(a \vert s_{t+1}) Q_{t+n-1}(s_{t+1}, a), \notag &\\
   \pi(s_{t+1}) &= \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot \text{softmax($Q_{t+n-1}(s_{t+1}, a)$)} + \frac{\epsilon}{\vert A(s_t) \vert} \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
+    &\text{where } softmax(s_{t+1}, a) = \frac{Q_{t+n-1}(s_{t+1}, a)}{\sum_b Q_{t+n-1}(s_{t+1}, b)}, b \in A(s_{t+1}), \notag &\\
     &\text{$\epsilon$-greedy: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = \begin{cases}
       1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag &\\
       \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag
@@ -606,7 +609,7 @@ Finally, we can generalize n-step TD/MC methods, where $n \in [1, T]$, as
 
 ## off-policy without importance sampling: n-step Tree Backup
 The idea behind Tree Backup is to include estimations for actions not taken, weighted by $\pi(a \vert s)$. For the taken action, say $a_{t+1}$, 
-it is estimated by $\pi(a_{t+1} \vert s_{t+1}) \cdot Q^{prime}(s_{t+1}, a_{t+1})$, which could be estimated recursively in the same way until 
+it is estimated by $\pi(a_{t+1} \vert s_{t+1}) \cdot Q^{\prime}(s_{t+1}, a_{t+1})$, which could be estimated recursively in the same way until 
 the bottom level of the tree, say the 3rd level for 3-step Tree Backup. All possible actions are taken into account, not only actions sampled 
 from the behavior policy, so importance sampling ratios are not used.
 
