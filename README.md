@@ -167,15 +167,15 @@ There are some key assumptions:
     - We don't complete policy evaluation before returing to policy improvement. Extremely, we move $q_i$ toward $q_\pi$ by 1 episode and then 
     update $\pi_i$. Even $\pi_i$ may still be the same as $\pi_{i-1}$, unlike DP, we continue iterating.
 
-## On-policy: $\epsilon$-greedy
-A policy is *soft*, meaning that $\pi(a_t \vert s_t) \gt 0, \forall s_t \in S, a_t \in A$. By this definition, $\epsilon$-greedy algorithm 
-is soft, which explores non-greedy actions at a probability of $\epsilon$, and the rest of probability 1-$\epsilon$ goes to the greedy action. 
-$\epsilon$-greedy algorithm explores every non-greedy action at a probability of $\frac{\epsilon}{\vert A(S_t) \vert}$ equally at least. Since 
+## On-policy: &epsilon;-greedy
+A policy is *soft*, meaning that $\pi(a_t \vert s_t) \gt 0, \forall s_t \in S, a_t \in A$. By this definition, &epsilon;-greedy algorithm 
+is soft, which explores non-greedy actions at a probability of &epsilon;, and the rest of probability 1-&epsilon; goes to the greedy action. 
+&epsilon;-greedy algorithm explores every non-greedy action at a probability of $\frac{\epsilon}{\vert A(S_t) \vert}$ equally at least. Since 
 the sum of probabilities of all possible actions equals to 1, it takes the greedy action at a probability of $1 - \epsilon - 
 \frac{\epsilon}{\vert A(S_t) \vert}$ if there is only one greedy action.
 
 1. Initialize
-    - $\pi$ has arbitrary $A^\ast$ for all states, with $\epsilon$-greedy
+    - $\pi$ has arbitrary $A^\ast$ for all states, with &epsilon;-greedy
     - fill Q(s, a) with arbitrary real number
     - fill n(s, a) with 0
 2. Iterate
@@ -200,7 +200,7 @@ policy $b$ which is used for episode generation. Off-policy is more general than
 on-policy is a special case of off-policy when $b = \pi$. 
 
 Off-policy methods have an assumption, the assumption of coverage, which requires $b(a_t \vert s_t) > 0$ if $\pi(a_t \vert s_t) > 0, \forall s_t \in S$. 
-A simple choice of $\pi$ being greedy and $b$ being $\epsilon$-soft would meet this requirement.
+A simple choice of $\pi$ being greedy and $b$ being &epsilon;-soft would meet this requirement.
 
 Consider an episode starting at $S_t$, $A_t, S_{t+1}, A_{t+1}, ..., S_T$, occurring under policy $\pi$. The probability of the episode is
 
@@ -284,7 +284,7 @@ pair to approximate equation (4), TD has both advantages.
 ## on-policy: Sarsa
 The name Sarsa comes after the pattern of episodes, $S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1}$. Before it updates $Q(s_t, a_t)$, Sarsa takes the 
 action under the policy $\pi(a_t \vert s_t)$, observes the sampled reward $r_{t+1}$ and state $s_{t+1}$, and consults the same policy 
-$\pi(a_{t+1} \vert s_{t+1})$ for what $a_{t+1}$ should be. The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule is
+$\pi(a_{t+1} \vert s_{t+1})$ for what $a_{t+1}$ should be. The policy can be &epsilon;-greedy or &epsilon;-soft. The update rule is
 
 $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{n}(s_{t+1}, a_{t+1}) - Q_n(s_t, a_t)], \alpha \in (0, 1]}$$
 
@@ -305,7 +305,7 @@ $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{n
     - until $s_t$ == $s_T$
 
 ## off-policy: Q-learning
-The target policy $\pi$ of Q-learning is greedy, and the behavior policy $b$ can be $\epsilon$-greedy or $\epsilon$-soft. The update rule is
+The target policy $\pi$ of Q-learning is greedy, and the behavior policy $b$ can be &epsilon;-greedy or &epsilon;-soft. The update rule is
 
 $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot \max_a Q_{n}(s_{t+1}, a) - Q_n(s_t, a_t)], \alpha \in (0, 1]}$$
 
@@ -325,7 +325,7 @@ $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot \max
 
 ## on/off-policy: Expected Sarsa
 The target policy $\pi$ of Expected Sarsa is also greedy, but it uses the expected value of $Q_n(s_{t+1}, a)$ for policy evaluation. Therefore, 
-the behavior policy $b$ can be $\epsilon$-greedy or $\epsilon$-soft, or even the same as the target policy. The update rule is
+the behavior policy $b$ can be &epsilon;-greedy or &epsilon;-soft, or even the same as the target policy. The update rule is
 
 $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot \sum_a \pi(a \vert s_{t+1}) Q_{n}(s_{t+1}, a) - Q_n(s_t, a_t)], \alpha \in (0, 1]}$$
 
@@ -345,7 +345,7 @@ $${Q_{n+1}(s_t, a_t) = Q_n(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot \sum
 
 ## off-policy: Double Q-learning
 To prevent maximization bias, Double Q-learning uses two independent copies of estimation of the action-value function, $Q_1(s, a)$ and 
-$Q_2(s, a)$. Its behavior policy consider the sum or average of $Q_1(s, a)$ and $Q_2(s, a)$, and it can be $\epsilon$-greedy or $\epsilon$-soft. 
+$Q_2(s, a)$. Its behavior policy consider the sum or average of $Q_1(s, a)$ and $Q_2(s, a)$, and it can be &epsilon;-greedy or &epsilon;-soft. 
 There are two symmetrical update rules, one for $Q_1(s, a)$ and the other for $Q_2(s, a)$. At each time step, Double Q-learning selects one 
 from them randomly. These update rules are
 
@@ -374,7 +374,7 @@ $${\begin{align*}
     - generate the initial state $s_0$ of an episode
     - $s_t$ = $s_0$
     - repeat
-        - $a_t$ = $b(s_t)$ ($\epsilon$-greedy or $\epsilon$-soft in $Q_1 + Q_2$)
+        - $a_t$ = $b(s_t)$ (&epsilon;-greedy or &epsilon;-soft in $Q_1 + Q_2$)
         - take action $a_t$
         - observe $r_{t+1}$, $s_{t+1}$
         - with 0.5 probability:
@@ -435,7 +435,7 @@ $${\begin{align*}
 But different algorithms use different ways to approximate $G_{t+n:t+n}$ of equation (9).
 
 ## on-policy: n-step Sarsa
-The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t+n:t+n}$ is
+The policy can be &epsilon;-greedy or &epsilon;-soft. The update rule of $G_{t+n:t+n}$ is
 
 $${\begin{align*}
   G_{t+n:t+n} &= Q_{t+n-1}(s_{t+1}, a_{t+1}), \text{ where } a_{t+1} = \pi(s_{t+1}) \\
@@ -482,7 +482,7 @@ $${\begin{align*}
     - until t > T + n - 2
 
 ## on-policy: n-step Expected Sarsa
-The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t+n:t+n}$ is
+The policy can be &epsilon;-greedy or &epsilon;-soft. The update rule of $G_{t+n:t+n}$ is
 
 $${\begin{align*}
   G_{t+n:t+n} &= \sum_a \pi(a \vert s_{t+1}) Q_{t+n-1}(s_{t+1}, a), \\
