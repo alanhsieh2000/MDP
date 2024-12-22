@@ -220,19 +220,19 @@ To get $v_\pi(s_t)$ or $q_\pi(s_t, a_t)$, we can simply scale returns occurring 
 states or state-action pairs. There are 2 versions of importance sampling: ordinary importance sampling and weighted importance sampling. 
 
 $${\begin{align*}
-  Q(s, a)_{ordinary} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{N}, \\
-  Q(s, a)_{weighted} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{\sum_{i=1}^{N}\rho_{t_i:T_i-1}}, \\
+  Q_{ordinary}(s, a) &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{N}, \\
+  Q_{weighted}(s, a) &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{\sum_{i=1}^{N}\rho_{t_i:T_i-1}}, \\
   &\text{where $N$ is the number of episodes}
 \end{align*}}$$
 
 Let $W_i = \rho_{t_i:T_i-1}$. The update rule for the ordinary importance sampling is simply
 
 $${\begin{align*}
-  Q_n(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{n-1}, \\
-  Q_{n+1}(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{n} \\
+  Q_{n,ordinary}(s, a) &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{n-1}, \\
+  Q_{n+1,ordinary}(s, a) &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{n} \\
   &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{n} \\
-  &= \frac{(n-1) Q_n(s, a)_{ordinary} + W_n G_n}{n} \\
-  &= Q_n(s, a)_{ordinary} + \frac{1}{n} (W_n G_n - Q_n(s, a)_{ordinary}), \\
+  &= \frac{(n-1) Q_{n,ordinary}(s, a) + W_n G_n}{n} \\
+  &= Q_{n,ordinary}(s, a) + \frac{1}{n} (W_n G_n - Q_{n,ordinary}(s, a)), \\
   &\text{where } n \ge 1
 \end{align*}}$$
 
@@ -240,12 +240,12 @@ Let $C_n = \sum_{k=1}^{n} W_k$. The update rule for the weighted importance samp
 
 $${\begin{align*}
   C_n &\doteq \sum_{k=1}^{n} = C_{n-1} + W_n \\
-  Q_n(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{\sum_{k=1}^{n-1}W_k} \\
+  Q_{n,weighted}(s, a) &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{\sum_{k=1}^{n-1}W_k} \\
   &= \frac{\sum_{k=1}^{n-1}W_k G_k}{C_n - W_n}, \\
-  Q_{n+1}(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{\sum_{k=1}^{n}W_k} \\
+  Q_{n+1,weighted}(s, a) &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{\sum_{k=1}^{n}W_k} \\
   &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{C_n} \\
-  &= \frac{(C_n - W_n) Q_n(s, a)_{weighted} + W_n G_n}{C_n} \\
-  &= Q_n(s, a)_{weighted} + \frac{W_n}{C_n} (G_n - Q_n(s, a)_{weighted}), \\
+  &= \frac{(C_n - W_n) Q_{n,weighted}(s, a) + W_n G_n}{C_n} \\
+  &= Q_{n,weighted}(s, a) + \frac{W_n}{C_n} (G_n - Q_{n,weighted}(s, a)), \\
   &\text{where } n \ge 1, C_0 = 0
 \end{align*}}$$
 
