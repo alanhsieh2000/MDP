@@ -1,7 +1,6 @@
 # MDP
-Markov decision processes, learned from [CMU](https://cmudeeprl.github.io/403website_s24/), assumes all the information of the history is 
-encoded in the latest state. Therefore, the decision to make at time t can only depend on the state at time t. Unlike the bandits problem, 
-which is stateless, states of a MDP problem matter.
+Markov decision processes, assumes all the information of the history is encoded in the latest state. Therefore, the decision to make at time 
+t can only depend on the state at time t. Unlike the bandits problem, which is stateless, states of a MDP problem matter.
 
 There are some definitions and notations used in this document. In general, random variables are in uppercase, and samples of these random 
 variables are in lowercase (Sutton et al., 2018).
@@ -22,33 +21,33 @@ Discount rate: The reward in the next time period values less than the current r
 
 Return: $G_t$
 
-$${\begin{align}
-  G_t &\doteq \sum_{k=0}^{T-t-1} \gamma^k R_{k+t+1} \notag &\\ 
-  &= R_{t+1} + \gamma \cdot G_{t+1} &\\
-  G_T &\doteq 0 \notag &\\
-  &t \in [0, T-1] \notag
-\end{align}}$$
+$${\begin{align*}
+  G_t &\doteq \sum_{k=0}^{T-t-1} \gamma^k R_{k+t+1} \\ 
+  &= R_{t+1} + \gamma \cdot G_{t+1} &(1) \\
+  G_T &\doteq 0 \\
+  &t \in [0, T-1]
+\end{align*}}$$
 
 Policy: A mapping from states to probability of selecting each possible action $\pi(a_t \vert s_t)$
 
 Value function: The expected return when starting from $s_t$ and following $\pi$ thereafter, $v_\pi(s_t)$
 
-$${\begin{align}
-  v_\pi(s_t) &\doteq E_\pi[G_t \vert S_t = s_t] \notag &\\
-  &= E_\pi[R_{t+1} + \gamma \cdot G_{t+1} \vert S_t = s_t] &\\
-  &= \sum_{a_t} \pi(a_t \vert s_t) \cdot \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})] &\\
-  &t \in [0, T-1] \notag
-\end{align}}$$
+$${\begin{align*}
+  v_\pi(s_t) &\doteq E_\pi[G_t \vert S_t = s_t] \\
+  &= E_\pi[R_{t+1} + \gamma \cdot G_{t+1} \vert S_t = s_t] &(2) \\
+  &= \sum_{a_t} \pi(a_t \vert s_t) \cdot \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})] &(3) \\
+  &t \in [0, T-1] 
+\end{align*}}$$
 
 Action-value function: The expected return when starting from $s_t$, and taking $a_t$, and also following $\pi$ thereafter, $q_\pi(s_t)$
 
-$${\begin{align}
-  q_\pi(s_t, a_t) &\doteq E_\pi[G_t \vert S_t = s_t, A_t = a_t] \notag &\\
-  &= E_\pi[R_{t+1} + \gamma \cdot G_{t+1} \vert S_t = s_t, A_t = a_t] &\\
-  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})] \notag &\\
-  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot \sum_{a_{t+1}} \pi(a_{t+1} \vert s_{t+1}) \cdot q_\pi(s_{t+1}, a_{t+1})] &\\
-  &t \in [0, T-1] \notag
-\end{align}}$$
+$${\begin{align*}
+  q_\pi(s_t, a_t) &\doteq E_\pi[G_t \vert S_t = s_t, A_t = a_t] \\
+  &= E_\pi[R_{t+1} + \gamma \cdot G_{t+1} \vert S_t = s_t, A_t = a_t] &(4) \\
+  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})] \\
+  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot \sum_{a_{t+1}} \pi(a_{t+1} \vert s_{t+1}) \cdot q_\pi(s_{t+1}, a_{t+1})] &(5) \\
+  &t \in [0, T-1]
+\end{align*}}$$
 
 Optimal policy: A policy better than or equal to all the other policies, $\pi_\ast$. By following it, its coresponding value function and 
 action-value function are both optimal.
@@ -88,25 +87,25 @@ also for each state, until $v_k(s_t) - v_{k-1}(s_t)$ is less than a small number
 Before we move forward, we need to introduce a confusing notation $\pi^\prime(s_t)$. Unlike $\pi(a_t \vert s_t)$, which is a conditional PDF, 
 $\pi^\prime(s_t)$ returns the best action in state $s_t$.
 
-$${\begin{align}
-  \pi^\prime(s_t) &\doteq \arg \max_{a_t} q_\pi(s_t, a_t) \notag &\\
-  &= \arg \max_{a_t} \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})]
-\end{align}}$$
+$${\begin{align*}
+  \pi^\prime(s_t) &\doteq \arg \max_{a_t} q_\pi(s_t, a_t) \\
+  &= \arg \max_{a_t} \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\pi(s_{t+1})] &(6)
+\end{align*}}$$
 
 Therefore, by the definition of $v_\ast(s_t)$ and equation (3), we have
 
-$${\begin{align}
-  v_\ast(s_t) &= \max_\pi v_\pi(s_t) \notag &\\
-  &= \sum_{a_t} \pi_\ast(a_t \vert s_t) \cdot \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\ast(s_{t+1})] \notag &\\
-  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, \pi_\ast(s_t)) \cdot [r_{t+1} + \gamma \cdot v_\ast(s_{t+1})] \notag
-\end{align}}$$
+$${\begin{align*}
+  v_\ast(s_t) &= \max_\pi v_\pi(s_t) \\
+  &= \sum_{a_t} \pi_\ast(a_t \vert s_t) \cdot \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, a_t) \cdot [r_{t+1} + \gamma \cdot v_\ast(s_{t+1})] \\
+  &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, \pi_\ast(s_t)) \cdot [r_{t+1} + \gamma \cdot v_\ast(s_{t+1})]
+\end{align*}}$$
 
 The update rule we will use is 
 
-$${\begin{align}
-  v_{i+1}(s_t) &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, \pi^\prime(s_t)) \cdot [r_{t+1} + \gamma \cdot v_i(s_{t+1})] &\\
-  & \to v_\ast(s_t), \text{when } k \to \infty, \pi^\prime(s_t) \to \pi_\ast(s_t) \notag
-\end{align}}$$
+$${\begin{align*}
+  v_{i+1}(s_t) &= \sum_{s_{t+1}, r_{t+1}} p(s_{t+1}, r_{t+1} \vert s_t, \pi^\prime(s_t)) \cdot [r_{t+1} + \gamma \cdot v_i(s_{t+1})] &(7) \\
+  & \to v_\ast(s_t), \text{when } k \to \infty, \pi^\prime(s_t) \to \pi_\ast(s_t)
+\end{align*}}$$
 
 We start from an arbitary $\pi_0(s_t)$ and $v_0(s_t)$. Alternately and iteratively, we use equation (7) to calculate $v_1(s_t)$, which is called 
 policy **E**valuation, and then use equation (6) to update $\pi_1(s_t)$, which is called policy **I**mprovement. As the iteration continues, 
@@ -205,11 +204,11 @@ A simple choice of $\pi$ being greedy and $b$ being $\epsilon$-soft would meet t
 
 Consider an episode starting at $S_t$, $A_t, S_{t+1}, A_{t+1}, ..., S_T$, occurring under policy $\pi$. The probability of the episode is
 
-$${\begin{align}
-  &\Pr(A_t, S_{t+1}, A_{t+1}, ..., S_T \vert S_t) \text{ where } A_{t:T-1} \thicksim \pi \notag \\
-  &= \pi(A_t \vert S_t)p(S_{t+1} \vert S_t, A_t)\pi(A_{t+1} \vert S_{t+1})...p(S_T \vert S_{T-1}, A_{T-1}) \notag \\
-  &= \prod_{k=t}^{T-1} \pi(A_k \vert S_k)p(S_{k+1} \vert S_k, A_k) \notag
-\end{align}}$$
+$${\begin{align*}
+  &\Pr(A_t, S_{t+1}, A_{t+1}, ..., S_T \vert S_t) \text{ where } A_{t:T-1} \thicksim \pi \\
+  &= \pi(A_t \vert S_t)p(S_{t+1} \vert S_t, A_t)\pi(A_{t+1} \vert S_{t+1})...p(S_T \vert S_{T-1}, A_{T-1}) \\
+  &= \prod_{k=t}^{T-1} \pi(A_k \vert S_k)p(S_{k+1} \vert S_k, A_k)
+\end{align*}}$$
 
 For the same reason, the probability of the same episode, occurring under policy $b$ is $\prod_{k=t}^{T-1} b(A_k \vert S_k)p(S_{k+1} \vert S_k, A_k)$. 
 The importance-sampling ratio is defined as
@@ -220,35 +219,35 @@ $${\rho_{t:T-1} \doteq \frac{\prod_{k=t}^{T-1} \pi(A_k \vert S_k)p(S_{k+1} \vert
 To get $v_\pi(s_t)$ or $q_\pi(s_t, a_t)$, we can simply scale returns occurring under the policy $b$ and average the results, with respect to 
 states or state-action pairs. There are 2 versions of importance sampling: ordinary importance sampling and weighted importance sampling. 
 
-$${\begin{align}
-  Q(s, a)_{ordinary} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{N}, \notag &\\
-  Q(s, a)_{weighted} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{\sum_{i=1}^{N}\rho_{t_i:T_i-1}}, \notag &\\
-  &\text{where $N$ is the number of episodes} \notag
-\end{align}}$$
+$${\begin{align*}
+  Q(s, a)_{ordinary} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{N}, \\
+  Q(s, a)_{weighted} &\doteq \frac{\sum_{i=1}^{N}\rho_{t_i:T_i-1} \cdot G_{t_i}}{\sum_{i=1}^{N}\rho_{t_i:T_i-1}}, \\
+  &\text{where $N$ is the number of episodes}
+\end{align*}}$$
 
 Let $W_i = \rho_{t_i:T_i-1}$. The update rule for the ordinary importance sampling is simply
 
-$${\begin{align}
-  Q_n(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{n-1}, \notag &\\
-  Q_{n+1}(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{n} \notag &\\
-  &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{n} \notag &\\
-  &= \frac{(n-1) Q_n(s, a)_{ordinary} + W_n G_n}{n} \notag &\\
-  &= Q_n(s, a)_{ordinary} + \frac{1}{n} (W_n G_n - Q_n(s, a)_{ordinary}), \notag &\\
-  &\text{where } n \ge 1 \notag
-\end{align}}$$
+$${\begin{align*}
+  Q_n(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{n-1}, \\
+  Q_{n+1}(s, a)_{ordinary} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{n} \\
+  &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{n} \\
+  &= \frac{(n-1) Q_n(s, a)_{ordinary} + W_n G_n}{n} \\
+  &= Q_n(s, a)_{ordinary} + \frac{1}{n} (W_n G_n - Q_n(s, a)_{ordinary}), \\
+  &\text{where } n \ge 1
+\end{align*}}$$
 
 Let $C_n = \sum_{k=1}^{n} W_k$. The update rule for the weighted importance sampling is
 
-$${\begin{align}
-  C_n &\doteq \sum_{k=1}^{n} = C_{n-1} + W_n \notag &\\
-  Q_n(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{\sum_{k=1}^{n-1}W_k} \notag &\\
-  &= \frac{\sum_{k=1}^{n-1}W_k G_k}{C_n - W_n}, \notag &\\
-  Q_{n+1}(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{\sum_{k=1}^{n}W_k} \notag &\\
-  &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{C_n} \notag &\\
-  &= \frac{(C_n - W_n) Q_n(s, a)_{weighted} + W_n G_n}{C_n} \notag &\\
-  &= Q_n(s, a)_{weighted} + \frac{W_n}{C_n} (G_n - Q_n(s, a)_{weighted}), \notag &\\
-  &\text{where } n \ge 1, C_0 = 0 \notag
-\end{align}}$$
+$${\begin{align*}
+  C_n &\doteq \sum_{k=1}^{n} = C_{n-1} + W_n \\
+  Q_n(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n-1}W_k G_k}{\sum_{k=1}^{n-1}W_k} \\
+  &= \frac{\sum_{k=1}^{n-1}W_k G_k}{C_n - W_n}, \\
+  Q_{n+1}(s, a)_{weighted} &\doteq \frac{\sum_{k=1}^{n}W_k G_k}{\sum_{k=1}^{n}W_k} \\
+  &= \frac{\sum_{k=1}^{n-1}W_k G_k + W_n G_n}{C_n} \\
+  &= \frac{(C_n - W_n) Q_n(s, a)_{weighted} + W_n G_n}{C_n} \\
+  &= Q_n(s, a)_{weighted} + \frac{W_n}{C_n} (G_n - Q_n(s, a)_{weighted}), \\
+  &\text{where } n \ge 1, C_0 = 0
+\end{align*}}$$
 
 1. Initialize
     - fill Q($s_t$, $a_t$) with arbitrary real number
@@ -350,22 +349,22 @@ $Q_2(s, a)$. Its behavior policy consider the sum or average of $Q_1(s, a)$ and 
 There are two symmetrical update rules, one for $Q_1(s, a)$ and the other for $Q_2(s, a)$. At each time step, Double Q-learning selects one 
 from them randomly. These update rules are
 
-$${\begin{align}
-  Q_{1,n+1}(s_t, a_t) &= Q_{1,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{2,n}(s_{t+1}, \arg \max_a Q_{1,n}(s_{t+1}, a)) - Q_{1,n}(s_t, a_t)], \notag &\\
-  Q_{2,n+1}(s_t, a_t) &= Q_{2,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{1,n}(s_{t+1}, \arg \max_a Q_{2,n}(s_{t+1}, a)) - Q_{2,n}(s_t, a_t)], \notag &\\
-  &\text{where } \alpha \in (0, 1] \notag &\\
-\end{align}}$$
+$${\begin{align*}
+  Q_{1,n+1}(s_t, a_t) &= Q_{1,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{2,n}(s_{t+1}, \arg \max_a Q_{1,n}(s_{t+1}, a)) - Q_{1,n}(s_t, a_t)], \\
+  Q_{2,n+1}(s_t, a_t) &= Q_{2,n}(s_t, a_t) + \alpha \cdot [r_{t+1} + \gamma \cdot Q_{1,n}(s_{t+1}, \arg \max_a Q_{2,n}(s_{t+1}, a)) - Q_{2,n}(s_t, a_t)], \\
+  &\text{where } \alpha \in (0, 1]
+\end{align*}}$$
 
-$${\begin{align}
+$${\begin{align*}
   b(s_t) = \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim b(a_t \vert s_t) = (1 - \epsilon) \cdot softmax(s_t, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
-    &\text{where } softmax(s_t, a) = \frac{e^{Q_1(s_t, a)+Q_2(s_t, a)}}{\sum_b e^{Q_1(s_t, b)+Q_2(s_t, b)}}, b \in A(s_t), \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim b(a_t \vert s_t) = (1 - \epsilon) \cdot softmax(s_t, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \\
+    &\text{where } softmax(s_t, a) = \frac{e^{Q_1(s_t, a)+Q_2(s_t, a)}}{\sum_b e^{Q_1(s_t, b)+Q_2(s_t, b)}}, b \in A(s_t), \\
     &\text{$\epsilon$-greedy: } a_t \thicksim b(a_t \vert s_t) = \begin{cases}
-      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_1(s_t, a)+Q_2(s_t, a) \notag &\\
-      \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t \neq \arg \max_a Q_1(s_t, a)+Q_2(s_t, a) \notag
+      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_1(s_t, a)+Q_2(s_t, a) \\
+      \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t \neq \arg \max_a Q_1(s_t, a)+Q_2(s_t, a)
     \end{cases}
   \end{cases}
-\end{align}}$$
+\end{align*}}$$
 
 1. Initialize
     - fill $Q_1(s_t, a_t), Q_2(s_t, a_t)$ with arbitrary real number
@@ -395,60 +394,60 @@ $R_{t+2} + \gamma R_{t+3} + ... + \gamma^{n-2} R_{t+n} + \gamma^{n-1} Q_{t+n-1}(
 TD; when $t+n \ge T$, n-step TD is the same as MC. MC has no bootstrapping feature, one-step TD has one-step bootstrapping, and n-step TD has 
 n-step bootstrapping.
 
-$${\begin{align}
-  G_t &\doteq \sum_{k=0}^{T-t-1} \gamma^k R_{k+t+1} \notag &\\
-  &= R_{t+1} + \gamma \cdot G_{t+1} \tag{from (1)} &\\
-  &= R_{t+1} + \gamma \cdot \sum_{k=1}^{T-t-1} \gamma^{k-1} R_{k+t+1} \notag &\\
-  \longrightarrow \notag &\\
-  E[G_{t+1} \vert S_t = s_t, A_t = a_t] &= E[\sum_{k=1}^{T-t-1} \gamma^{k-1} R_{k+t+1} \vert S_t = s_t, A_t = a_t] \notag &\\
-  &\approxeq \sum_{k=1}^{T-t-1} \gamma^{k-1} r_{k+t+1}, \notag &\\
-  &\text{where } r_{k+1} \backsim \Pr_{a_k \backsim \pi(a_k \vert s_k)}(r_{k+1} \vert s_k, a_k) \tag{MC} &\\
-  &\approxeq [\sum_a \pi(a \vert s_{t+1}) \cdot Q_t(s_{t+1}, a) \vert \max_a Q_t(s_{t+1}, a) \vert Q_t^{(\prime)}(s_{t+1}, a_{t+1})], \notag &\\
-  &\text{where } a_{t+1} \backsim \pi(a_{t+1} \vert s_{t+1}) \text{ or } a_{t+1} = \arg \max_a Q_t(s_{t+1}, a) \tag{one-step TD} &\\
-  &\approxeq \sum_{k=1}^{n-1} \gamma^{k-1} r_{k+t+1} + \gamma^{n-1} \cdot E[G_{t+n} \vert S_{t+n-1} = s_{t+n-1}, A_{t+n-1} = a_{t+n-1}], &\\
-  &\text{where } r_{k+1} \backsim \Pr_{a_k \backsim \pi(a_k \vert s_k)}(r_{k+1} \vert s_k, a_k) \tag{n-step TD}
-\end{align}}$$
+$${\begin{align*}
+  G_t &\doteq \sum_{k=0}^{T-t-1} \gamma^k R_{k+t+1} \\
+  &= R_{t+1} + \gamma \cdot G_{t+1} &\text{(from (1))} \\
+  &= R_{t+1} + \gamma \cdot \sum_{k=1}^{T-t-1} \gamma^{k-1} R_{k+t+1} \\
+  \longrightarrow \\
+  E[G_{t+1} \vert S_t = s_t, A_t = a_t] &= E[\sum_{k=1}^{T-t-1} \gamma^{k-1} R_{k+t+1} \vert S_t = s_t, A_t = a_t] \\
+  &\approxeq \sum_{k=1}^{T-t-1} \gamma^{k-1} r_{k+t+1}, \\
+  &\text{where } r_{k+1} \backsim \Pr_{a_k \backsim \pi(a_k \vert s_k)}(r_{k+1} \vert s_k, a_k) &\text{(MC)} \\
+  &\approxeq [\sum_a \pi(a \vert s_{t+1}) \cdot Q_t(s_{t+1}, a) \vert \max_a Q_t(s_{t+1}, a) \vert Q_t^{(\prime)}(s_{t+1}, a_{t+1})], \\
+  &\text{where } a_{t+1} \backsim \pi(a_{t+1} \vert s_{t+1}) \text{ or } a_{t+1} = \arg \max_a Q_t(s_{t+1}, a) &\text{(one-step TD)} \\
+  &\approxeq \sum_{k=1}^{n-1} \gamma^{k-1} r_{k+t+1} + \gamma^{n-1} \cdot E[G_{t+n} \vert S_{t+n-1} = s_{t+n-1}, A_{t+n-1} = a_{t+n-1}], &(8) \\
+  &\text{where } r_{k+1} \backsim \Pr_{a_k \backsim \pi(a_k \vert s_k)}(r_{k+1} \vert s_k, a_k) \text{(n-step TD)}
+\end{align*}}$$
 
 We define an additional notation to simplify equation (8)
 
-$${\begin{align}
-  G_{t:t+n} &\doteq \sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \notag &\\
-  &= R_{t+1} + \sum_{k=1}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \notag &\\
-  &= R_{t+1} + \gamma \cdot [\sum_{k=1}^{n-1} \gamma^{k-1} R_{k+t+1} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n})] \notag &\\
-  &= R_{t+1} + \gamma \cdot [\sum_{k=0}^{n-2} \gamma^{k} R_{k+t+2} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n})] \notag &\\
-  &\text{where } Q_{t+n-1}(s_{t+n}, a_{t+n}) \approxeq E[G_{t+n} \vert S_{t+n-1} = s_{t+n-1}, A_{t+n-1} = a_{t+n-1}], n \ge 1, 0 \le t \lt T-n \notag &\\
-  G_{t:t+n} &\doteq G_t, \text{ if } t+n \ge T \notag &\\
-  \longrightarrow \notag &\\
-  G_{t+1:t+n} &\doteq \sum_{k=0}^{n-2} \gamma^{k} R_{k+t+2} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \notag &\\
-  &= \sum_{k=1}^{n-1} \gamma^{k-1} R_{k+t+1} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}), \notag &\\
-  G_{t:t+n} &= R_{t+1} + \gamma \cdot G_{t+1:t+n} \notag &\\
-  G_{t+1:t+n} &= R_{t+2} + \gamma \cdot G_{t+2:t+n} \notag &\\
-  G_{t:t+n} &= R_{t+1} + \gamma R_{t+2} + \gamma^2 \cdot G_{t+2:t+n} \notag &\\
-  &= \sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot G_{t+n:t+n} 
-\end{align}}$$
+$${\begin{align*}
+  G_{t:t+n} &\doteq \sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \\
+  &= R_{t+1} + \sum_{k=1}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \\
+  &= R_{t+1} + \gamma \cdot [\sum_{k=1}^{n-1} \gamma^{k-1} R_{k+t+1} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n})] \\
+  &= R_{t+1} + \gamma \cdot [\sum_{k=0}^{n-2} \gamma^{k} R_{k+t+2} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n})] \\
+  &\text{where } Q_{t+n-1}(s_{t+n}, a_{t+n}) \approxeq E[G_{t+n} \vert S_{t+n-1} = s_{t+n-1}, A_{t+n-1} = a_{t+n-1}], n \ge 1, 0 \le t \lt T-n \\
+  G_{t:t+n} &\doteq G_t, \text{ if } t+n \ge T \\
+  \longrightarrow \\
+  G_{t+1:t+n} &\doteq \sum_{k=0}^{n-2} \gamma^{k} R_{k+t+2} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}) \\
+  &= \sum_{k=1}^{n-1} \gamma^{k-1} R_{k+t+1} + \gamma^{n-1} \cdot Q_{t+n-1}(s_{t+n}, a_{t+n}), \\
+  G_{t:t+n} &= R_{t+1} + \gamma \cdot G_{t+1:t+n} \\
+  G_{t+1:t+n} &= R_{t+2} + \gamma \cdot G_{t+2:t+n} \\
+  G_{t:t+n} &= R_{t+1} + \gamma R_{t+2} + \gamma^2 \cdot G_{t+2:t+n} \\
+  &= \sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot G_{t+n:t+n} &(9)
+\end{align*}}$$
 
 Generally, the update rule of n-step TD methods are
 
-$${\begin{align}
-  Q_{t+n}(s_t, a_t) &\doteq Q_{t+n-1}(s_t, a_t) + \alpha \cdot [G_{t:t+n} - Q_{t+n-1}(s_t, a_t)] \notag &\\
-\end{align}}$$
+$${\begin{align*}
+  Q_{t+n}(s_t, a_t) &\doteq Q_{t+n-1}(s_t, a_t) + \alpha \cdot [G_{t:t+n} - Q_{t+n-1}(s_t, a_t)] \\
+\end{align*}}$$
 
 But different algorithms use different ways to approximate $G_{t+n:t+n}$ of equation (9).
 
 ## on-policy: n-step Sarsa
 The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t+n:t+n}$ is
 
-$${\begin{align}
-  G_{t+n:t+n} &= Q_{t+n-1}(s_{t+1}, a_{t+1}), \text{ where } a_{t+1} = \pi(s_{t+1}) \notag &\\
+$${\begin{align*}
+  G_{t+n:t+n} &= Q_{t+n-1}(s_{t+1}, a_{t+1}), \text{ where } a_{t+1} = \pi(s_{t+1}) \\
   \pi(s_{t+1}) &= \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
-    &\text{where } softmax(s_{t+1}, a) = \frac{e^{Q_{t+n-1(s_{t+1}, a)}}}{\sum_b e^{Q_{t+n-1}(s_{t+1}, b)}}, b \in A(s_{t+1}), \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \\
+    &\text{where } softmax(s_{t+1}, a) = \frac{e^{Q_{t+n-1(s_{t+1}, a)}}}{\sum_b e^{Q_{t+n-1}(s_{t+1}, b)}}, b \in A(s_{t+1}), \\
     &\text{$\epsilon$-greedy: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = \begin{cases}
-      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag &\\
-      \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag
+      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \\
+      \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a)
     \end{cases}
   \end{cases}
-\end{align}}$$
+\end{align*}}$$
 
 1. Initialize
     - fill $Q(s_t, a_t)$ with arbitrary real number.
@@ -485,17 +484,17 @@ $${\begin{align}
 ## on-policy: n-step Expected Sarsa
 The policy can be $\epsilon$-greedy or $\epsilon$-soft. The update rule of $G_{t+n:t+n}$ is
 
-$${\begin{align}
-  G_{t+n:t+n} &= \sum_a \pi(a \vert s_{t+1}) Q_{t+n-1}(s_{t+1}, a), \notag &\\
+$${\begin{align*}
+  G_{t+n:t+n} &= \sum_a \pi(a \vert s_{t+1}) Q_{t+n-1}(s_{t+1}, a), \\
   \pi(s_{t+1}) &= \begin{cases}
-    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \notag &\\
-    &\text{where } softmax(s_{t+1}, a) = \frac{Q_{t+n-1}(s_{t+1}, a)}{\sum_b Q_{t+n-1}(s_{t+1}, b)}, b \in A(s_{t+1}), \notag &\\
+    &\text{$\epsilon$-soft: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = (1 - \epsilon) \cdot softmax(s_{t+1}, a) + \frac{\epsilon}{\vert A(s_t) \vert}, \\
+    &\text{where } softmax(s_{t+1}, a) = \frac{Q_{t+n-1}(s_{t+1}, a)}{\sum_b Q_{t+n-1}(s_{t+1}, b)}, b \in A(s_{t+1}), \\
     &\text{$\epsilon$-greedy: } a_t \thicksim \pi(a_{t+1} \vert s_{t+1}) = \begin{cases}
-      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag &\\
-      \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a) \notag
+      1 - \epsilon + \frac{\epsilon}{\vert A(s_t) \vert}, &\text{if }a_t = \arg \max_a Q_{t+n-1}(s_{t+1}, a) \\
+      \frac{\epsilon}{\vert A(s_{t+1}) \vert}, &\text{if }a_{t+1} \neq \arg \max_a Q_{t+n-1}(s_{t+1}, a)
     \end{cases}
   \end{cases}
-\end{align}}$$
+\end{align*}}$$
 
 1. Initialize
     - fill $Q(s_t, a_t)$ with arbitrary real number.
@@ -545,19 +544,19 @@ If the target policy is different from the behavior policy, and the target polic
 the same as n-step Q-learning except the ending time period of the importance sampling ratio $\rho_{t+1:t+n-1}$, one less term than off-policy 
 n-step Sara. In this case, $a_{t+n}$ sampled from $b(a \vert s)$ is not used in its update rule but the greedy action, like
 
-$${\begin{align}
-  Q_{t+n}(s_t, a_t) &\doteq Q_{t+n-1}(s_t, a_t) + \alpha \cdot \rho_{t+1:t+n-1} \cdot [G_{t:t+n} - Q_{t+n-1}(s_t, a_t)], \notag &\\
-  &= Q_{t+n-1}(s_t, a_t) + \alpha \cdot \rho_{t+1:t+n-1} \cdot [\sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot G_{t+n:t+n} - Q_{t+n-1}(s_t, a_t)] \notag &\\
-  &\text{where } G_{t+n:t+n} = \arg \max_a Q_{t+n-1}(s_{t+n}, a) \notag
-\end{align}}$$
+$${\begin{align*}
+  Q_{t+n}(s_t, a_t) &\doteq Q_{t+n-1}(s_t, a_t) + \alpha \cdot \rho_{t+1:t+n-1} \cdot [G_{t:t+n} - Q_{t+n-1}(s_t, a_t)], \\
+  &= Q_{t+n-1}(s_t, a_t) + \alpha \cdot \rho_{t+1:t+n-1} \cdot [\sum_{k=0}^{n-1} \gamma^{k} R_{k+t+1} + \gamma^n \cdot G_{t+n:t+n} - Q_{t+n-1}(s_t, a_t)] \\
+  &\text{where } G_{t+n:t+n} = \arg \max_a Q_{t+n-1}(s_{t+n}, a)
+\end{align*}}$$
 
 For all the above, the importance sampling ratio is
 
-$${\begin{align}
-  \rho_{t+1:h} &\doteq \prod_{k=t+1}^{min(h, T-1)} \frac{\pi(a_k \vert s_k)}{b(a_k \vert s_k)}, \notag &\\
-  &\text{where } h = \begin{cases} t+n \text{, for n-step Sarsa} \notag &\\
-  t+n-1 \text{, for others that $a_{t+n} \backsim b(a_{t+n} \vert s_{t+n})$ is not used} \notag \end{cases}
-\end{align}}$$
+$${\begin{align*}
+  \rho_{t+1:h} &\doteq \prod_{k=t+1}^{min(h, T-1)} \frac{\pi(a_k \vert s_k)}{b(a_k \vert s_k)}, \\
+  &\text{where } h = \begin{cases} t+n \text{, for n-step Sarsa} \\
+  t+n-1 \text{, for others that $a_{t+n} \backsim b(a_{t+n} \vert s_{t+n})$ is not used} \end{cases}
+\end{align*}}$$
 
 Finally, we can generalize n-step TD/MC methods, where $n \in [1, T]$, as
 
@@ -625,3 +624,5 @@ The algorithm may not be needed for the further development of deep reinforcemen
 - Carnegie Mellon University, Fragkiadaki, Katerina, et al. 2024. "10-403 Deep Reinforcement Learning" As of 8 November, 2024. 
 https://cmudeeprl.github.io/403website_s24/.
 - Sutton, Richard S., and Barto, Andrew G. 2018. Reinforcement Learning - An indroduction, second edition. The MIT Press.
+- Towers, et al. 2024. "Gymnasium: A Standard Interface for Reinforcement Learning Environments", [arXiv:2407.17032](https://arxiv.org/abs/2407.17032).
+- Farama Foundation, n.d. Gymnasium. https://github.com/farama-Foundation/gymnasium?tab=readme-ov-file
