@@ -92,7 +92,7 @@ class TestMonteCarlo(unittest.TestCase):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
         env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
-        agt = MC.MonteCarlo(env)
+        agt = MC.MonteCarlo(env, epsilonHalfLife=20000)
         agt.train(nEpisode)
         agt.save(f'test-{nEpisode}.pkl')
 
@@ -161,8 +161,12 @@ class TestMonteCarlo(unittest.TestCase):
                 im = axs[a, k].imshow(c[a, k, :, :])
                 axs[a, k].set_title(f'n: {tmp1} usable ace for {tmp2}')
                 axs[a, k].set_xlabel('Player sum')
+                axs[a, k].set_xticks(range(18), labels=[x for x in range(4, 22)])
                 axs[a, k].set_ylabel('Dealer showing')
+                axs[a, k].set_yticks(range(10), labels=[y for y in range(1, 11)])
 
+        fig.set_figheight(6)
+        fig.set_figwidth(10)
         fig.subplots_adjust(right=0.9)
         cbar_ax = fig.add_axes([0.91, 0.1, 0.02, 0.75])
         fig.colorbar(im, cax=cbar_ax)
@@ -189,8 +193,12 @@ class TestMonteCarlo(unittest.TestCase):
                 im = axs[a, k].imshow(c[a, k, :, :])
                 axs[a, k].set_title(f'Q: {tmp1} usable ace for {tmp2}')
                 axs[a, k].set_xlabel('Player sum')
+                axs[a, k].set_xticks(range(18), labels=[x for x in range(4, 22)])
                 axs[a, k].set_ylabel('Dealer showing')
+                axs[a, k].set_yticks(range(10), labels=[y for y in range(1, 11)])
 
+        fig.set_figheight(6)
+        fig.set_figwidth(10)
         fig.subplots_adjust(right=0.9)
         cbar_ax = fig.add_axes([0.91, 0.1, 0.02, 0.75])
         fig.colorbar(im, cax=cbar_ax)
