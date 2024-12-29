@@ -28,6 +28,12 @@ class Agent:
         for k, v in kwargs.items():
             self._kwargs[k] = v
 
+    def _getParameters(self) -> list[Any]:
+        """
+        It returns model parameters for saving and loading.
+        """
+        return []
+
     def takeAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
         """
         It returns the action according to its behavior policy.
@@ -40,6 +46,19 @@ class Agent:
         """
         raise NotImplementedError
     
+    def save(self, path: str) -> None:
+        version = 5
+        parameters = self._getParameters()
+        with open(path, 'wb') as f:
+            for k in parameters:
+                pickle.dump(self.__dict__[k], f, protocol=version)
+    
+    def load(self, path: str) -> None:
+        parameters = self._getParameters()
+        with open(path, 'rb') as f:
+            for k in parameters:
+                self.__dict__[k] = pickle.load(f)
+
     @property
     def seed(self) -> int | None:
         return self._seed
@@ -57,8 +76,10 @@ class MonteCarlo(Agent):
         assert(isinstance(env.action_space, gym.spaces.Discrete))
 
         super().__init__(env, **kwargs)
-        self._kwargs['visit'] = 'every'
-        self._kwargs['epsilonHalfLife'] = 10000
+        if 'visit' not in self._kwargs:
+            self._kwargs['visit'] = 'every'
+        if 'epsilonHalfLife' not in self._kwargs:
+            self._kwargs['epsilonHalfLife'] = 10000
 
         self._sa: list[tuple[ObsType, ActType]] = []
         self._r: list[SupportsFloat] = []
@@ -104,14 +125,22 @@ class MonteCarlo(Agent):
         self._info = []
 
     def _updateTargetPolicy(self, state: ObsType) -> None:
-        q_ast = max(self._Q[state])
-        idx = np.argwhere(self._Q[state] == q_ast)
         self._pi[state].fill(self._epsilon / self._pi[state].shape[0])
-        for a_ast in idx:
-            self._pi[state][a_ast[0]] += (1 - self._epsilon) / idx.shape[0]
+        a_ast = np.argmax(self._Q[state])
+        self._pi[state][a_ast] += 1 - self._epsilon
 
     def _epsilonDecay(self) -> None:
         self._epsilon = math.exp(-self._nEpisode*math.log(2)/self._kwargs['epsilonHalfLife'])
+    
+    def _getParameters(self):
+        parameters = super()._getParameters()
+        parameters.append('_kwargs')
+        parameters.append('_Q')
+        parameters.append('_n')
+        parameters.append('_pi')
+        parameters.append('_nEpisode')
+        parameters.append('_epsilon')
+        return parameters
 
     def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
         return np.argmax(self._Q[state])
@@ -125,25 +154,6 @@ class MonteCarlo(Agent):
             self._generateAnEpisode()
             self._updateActionValue()
             self._epsilonDecay()
-
-    def save(self, path: str) -> None:
-        version = 5
-        with open(path, 'wb') as f:
-            pickle.dump(self._kwargs, f, protocol=version)
-            pickle.dump(self._Q, f, protocol=version)
-            pickle.dump(self._n, f, protocol=version)
-            pickle.dump(self._pi, f, protocol=version)
-            pickle.dump(self._nEpisode, f, protocol=version)
-            pickle.dump(self._epsilon, f, protocol=version)
-
-    def load(self, path: str) -> None:
-        with open(path, 'rb') as f:
-            self._kwargs = pickle.load(f)
-            self._Q = pickle.load(f)
-            self._n = pickle.load(f)
-            self._pi = pickle.load(f)
-            self._nEpisode = pickle.load(f)
-            self._epsilon = pickle.load(f)
 
 if __name__ == '__main__':
     print('only runs in the top-level')
