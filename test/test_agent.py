@@ -109,7 +109,6 @@ class TestMonteCarlo(unittest.TestCase):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
         agt = MC.MonteCarlo(env)
-        #agt.train(10000)
         agt.load(f'test-{nEpisode}.pkl')
 
         c = np.zeros((2, 10, 18))

@@ -258,7 +258,7 @@ $${\begin{align*}
         - fill C($s_t$, $a_t$) with 0.0
 2. Iterate
     - b = any soft policy
-    - Generate an episode following $b$: $s_0, a_0, r_1, ..., s_{T-1}, a_{T-1}, r_T
+    - Generate an episode following $b: s_0, a_0, r_1, ..., s_{T-1}, a_{T-1}, r_T$
     - G = 0
     - W = 1
     - for t = T-1, T-2, ..., 0, while W != 0:
