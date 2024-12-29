@@ -1,5 +1,5 @@
 # MC/__init__.py
 
-from .agent import Agent, MonteCarlo
+from .monte_carlo import MonteCarlo
 
-__all__ = ["Agent", "MonteCarlo"]
+__all__ = ["MonteCarlo"]

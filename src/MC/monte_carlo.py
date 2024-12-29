@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import gymnasium as gym
-from gymnasium import spaces
 
 import numpy as np
 
 import math
-import pickle
 from collections import defaultdict
+
+from src import agent
 
 from typing import TypeVar, SupportsFloat, SupportsInt, Any
 from numpy.typing import NDArray
@@ -15,60 +15,7 @@ from numpy.typing import NDArray
 ObsType = TypeVar('ObsType')
 ActType = TypeVar('ActType')
 
-class Agent:
-    """
-    The agent interacts with a Gymnasium environment by taking actions and observing rewards. It's goal is to maximize the total rewards generated 
-    by the environment after executing actions over time until the terminal state.
-    """
-    def __init__(self, env: gym.Env[ObsType, ActType], **kwargs: Any) -> None:
-        self._env: gym.Env[ObsType, ActType] = env
-        self._seed : int | None = None
-        self._rng = np.random.default_rng()
-        self._kwargs: dict[str, Any] = {'gamma': 1.0}
-        for k, v in kwargs.items():
-            self._kwargs[k] = v
-
-    def _getParameters(self) -> list[Any]:
-        """
-        It returns model parameters for saving and loading.
-        """
-        return []
-
-    def takeAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
-        """
-        It returns the action according to its behavior policy.
-        """
-        raise NotImplementedError
-    
-    def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
-        """
-        It returns the action according to its target policy.
-        """
-        raise NotImplementedError
-    
-    def save(self, path: str) -> None:
-        version = 5
-        parameters = self._getParameters()
-        with open(path, 'wb') as f:
-            for k in parameters:
-                pickle.dump(self.__dict__[k], f, protocol=version)
-    
-    def load(self, path: str) -> None:
-        parameters = self._getParameters()
-        with open(path, 'rb') as f:
-            for k in parameters:
-                self.__dict__[k] = pickle.load(f)
-
-    @property
-    def seed(self) -> int | None:
-        return self._seed
-    
-    @seed.setter
-    def seed(self, sd: int) -> None:
-        self._seed = sd
-        self._rng = np.random.default_rng(self._seed)
-
-class MonteCarlo(Agent):
+class MonteCarlo(agent.Agent):
     """
     Monte Carlo agents learn in an episode-by-episode sense.
     """
@@ -111,7 +58,7 @@ class MonteCarlo(Agent):
             done = terminated or truncated
 
     def _updateActionValue(self) -> None:
-        G = 0
+        G = 0.0
         for sa, r, info, i in zip(self._sa, self._r, self._info, range(len(self._sa))):
             G = r + self._kwargs['gamma'] * G
             if self._kwargs['visit'] == 'first' and sa in self._sa[i+1:]:

@@ -2,10 +2,12 @@
 
 import unittest
 from .test_agent import *
+from .test_MC import *
+from .test_TD import *
 
 def load_tests(loader, standard_tests, pattern):
     suite = unittest.TestSuite()
-    tests = (TestAgent, TestMonteCarlo)
+    tests = (TestAgent, TestMonteCarlo, TestTD)
     for test_class in tests:
         test_cases = loader.loadTestsFromTestCase(test_class)
         suite.addTests(test_cases)
