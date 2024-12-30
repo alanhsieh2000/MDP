@@ -169,7 +169,103 @@ class TestnTD(unittest.TestCase):
         agt.load(f'test-nTD-{nEpisode}.pkl')
 
         rewards = agt.run(nRun)
-        print(f'nTD: {nRun} runs, total rewards -> {rewards:.1f}')
+        print(f'n-step TD: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_plot_nql(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepQLearning(env, nStep, epsilonHalfLife=20000)
+        agt.train(nEpisode)
+        agt.save(f'test-nQL-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('rewards-nQL.svg', format='svg')
+
+        env.close()
+
+    def test_run_nql(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepQLearning(env, nStep)
+        agt.load(f'test-nQL-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step Q-Learning: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_plot_nesarsa(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepExpectedSarsa(env, nStep, epsilonHalfLife=20000)
+        agt.train(nEpisode)
+        agt.save(f'test-nESarsa-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('rewards-nESarsa.svg', format='svg')
+
+        env.close()
+
+    def test_run_nesarsa(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepExpectedSarsa(env, nStep)
+        agt.load(f'test-nESarsa-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step Expected Sarsa: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_plot_ndql(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepDoubleQLearning(env, nStep, epsilonHalfLife=20000)
+        agt.train(nEpisode)
+        agt.save(f'test-nDQL-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('rewards-nDQL.svg', format='svg')
+
+        env.close()
+
+    def test_run_ndql(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepDoubleQLearning(env, nStep)
+        agt.load(f'test-nDQL-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step double Q-Learning: {nRun} runs, total rewards -> {rewards:.1f}')
 
         env.close()
 

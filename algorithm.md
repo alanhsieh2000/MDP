@@ -570,7 +570,7 @@ Finally, we can generalize n-step TD/MC methods, where $n \in [1, T]$, as
     - initialize off-policy to true or false
     - initialize MC to true or false
     - name = selected algorithm
-    - $a_{t+n}Used$ = algorithms[name][0]
+    - $a_{t+n,used}$ = algorithms[name][0]
     - $G_{t+n:t+n}$ = algorithms[name][1]
 2. Iterate
     - generate the initial state $s_0$ of an episode
@@ -593,7 +593,7 @@ Finally, we can generalize n-step TD/MC methods, where $n \in [1, T]$, as
             - else:
                 - $a_t[(t+1) \bmod (n+1)] = b(s_{t+1})$
         - if t >= n-1:
-            - h = min(t+n-2+$a_{t+n}Used$, T-1)
+            - $h = min(t+n-2+a_{t+n,used}, T-1)$
             - if (t+1)-(n-1) <= h and off-policy:
                 - $\rho = \prod_{k=(t+1)-(n-1)}^{h} \frac{\pi(a_t[k \bmod (n+1)] \vert s_t[k \bmod (n+1)])}{b(a_t[k \bmod (n+1)] \vert s_t[k \bmod (n+1)])}$
             - else:

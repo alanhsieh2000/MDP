@@ -43,6 +43,9 @@ class nStepTemporalDifference(agent.Agent):
         a.fill(1.0 / n)
         return a
     
+    def _estimateActionValue(self, state: ObsType, action: ActType) -> SupportsFloat:
+        return self._Q[state][action]
+    
     def _updateActionValue(self, states: NDArray, actions: NDArray, rewards: NDArray, t: SupportsInt, T: SupportsInt) -> None:
         np1 = self._nStep + 1
         G = 0.0
@@ -55,7 +58,7 @@ class nStepTemporalDifference(agent.Agent):
             gamma *= self._kwargs['gamma']
         if t + 1 < T:
             i = (t + 1) % np1
-            G += gamma * self._Q[states[i]][actions[i]]
+            G += gamma * self._estimateActionValue(states[i], actions[i])
         i = (t + 1 - self._nStep) % np1
         self._Q[states[i]][actions[i]] += self._kwargs['alpha'] * (G - self._Q[states[i]][actions[i]])
         self._updateTargetPolicy(states[i])
