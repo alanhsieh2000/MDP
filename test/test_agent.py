@@ -21,5 +21,17 @@ class TestAgent(unittest.TestCase):
 
         env.close()
 
+    def test_run(self):
+        nRun = 1000
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nRun)
+        agt = agent.Agent(env)
+
+        rewards = agt.run(nRun)
+        self.assertEqual(rewards, sum(env.return_queue))
+        print(f'TD: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
 if __name__ == '__main__':
     unittest.main()

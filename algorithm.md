@@ -457,27 +457,27 @@ $${\begin{align*}
     - $r_{t+1}$ = array[0:n+1]
 2. Iterate
     - generate the initial state $s_0$ of an episode
-    - $s_t$[0] = $s_0$
-    - $a_t$[0] = $\pi(s_t)$
+    - $s_t[0] = s_0$
+    - $a_t[0] = \pi(s_t)$
     - T = $\infty$
     - t = 0
     - repeat
         - if t < T:
-            - take action $a_t$[t%(n+1)]
+            - take action $a_t[t \bmod (n+1)]$
             - observe $s_{t+1}, r_{t+1}$
-            - $s_t$[(t+1)%(n+1)] = $s_{t+1}$
-            - $r_{t+1}$[(t+1)%(n+1)] = $r_{t+1}$
-            - if $s_{t+1}$ == $s_T$:
+            - $s_t[(t+1) \bmod (n+1)] = s_{t+1}$
+            - $r_{t+1}[(t+1) \bmod (n+1)] = r_{t+1}$
+            - if $s_{t+1} == s_T$:
                 - T = t + 1
             - else:
-                - $a_t$[(t+1)%(n+1)] = $\pi(s_{t+1})$
+                - $a_t[(t+1) \bmod (n+1)] = \pi(s_{t+1})$
         - if t >= n-1:
             - if t < T - 1:
-                - G = $\sum_{k=(t+1)-(n-1)}^{t+1} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k\%(n+1)] + \gamma^n \cdot Q(s_t[(t+1)\%(n+1)], a_t[(t+1)\%(n+1)])$
+                - $G = \sum_{k=(t+1)-(n-1)}^{t+1} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k \bmod (n+1)] + \gamma^n \cdot Q(s_t[(t+1) \bmod (n+1)], a_t[(t+1) \bmod (n+1)])$
             - else:
-                - G = $\sum_{k=(t+1)-(n-1)}^T \gamma^{k-(t+1)+(n-1)} r_{t+1}[k\%(n+1)]$
-            - $Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)]) += \alpha \cdot [G - Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)])]$
-            - update $\pi(a_t \vert s_t[(t+1-n)\%(n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
+                - $G = \sum_{k=(t+1)-(n-1)}^T \gamma^{k-(t+1)+(n-1)} r_{t+1}[k \bmod (n+1)]$
+            - $Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)]) += \alpha \cdot [G - Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)])]$
+            - update $\pi(a_t \vert s_t[(t+1-n) \bmod (n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
         - t = t + 1
     - until t > T + n - 2
 
@@ -504,27 +504,27 @@ $${\begin{align*}
     - $r_{t+1}$ = array[0:n+1]
 2. Iterate
     - generate the initial state $s_0$ of an episode
-    - $s_t$[0] = $s_0$
-    - $a_t$[0] = $\pi(s_t)$
+    - $s_t[0] = s_0$
+    - $a_t[0] = \pi(s_t)$
     - T = $\infty$
     - t = 0
     - repeat
         - if t < T:
-            - take action $a_t$[t%(n+1)]
+            - take action $a_t[t \bmod (n+1)]$
             - observe $s_{t+1}, r_{t+1}$
-            - $s_t$[(t+1)%(n+1)] = $s_{t+1}$
-            - $r_{t+1}$[(t+1)%(n+1)] = $r_{t+1}$
-            - if $s_{t+1}$ == $s_T$:
+            - $s_t[(t+1) \bmod (n+1)] = s_{t+1}$
+            - $r_{t+1}[(t+1) \bmod (n+1)] = r_{t+1}$
+            - if $s_{t+1} == s_T$:
                 - T = t + 1
             - else:
-                - $a_t$[(t+1)%(n+1)] = $\pi(s_{t+1})$
+                - $a_t[(t+1) \bmod (n+1)] = \pi(s_{t+1})$
         - if t >= n-1:
             - if t < T - 1:
-                - G = $\sum_{k=(t+1)-(n-1)}^{t+1} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k\%(n+1)] + \gamma^n \cdot \sum_a \pi(a \vert s_{t+1}) Q(s_t[(t+1)\%(n+1)], a_t[(t+1)\%(n+1)])$
+                - $G = \sum_{k=(t+1)-(n-1)}^{t+1} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k \bmod (n+1)] + \gamma^n \cdot \sum_a \pi(a \vert s_{t+1}) Q(s_t[(t+1) \bmod (n+1)], a_t[(t+1) \bmod (n+1)])$
             - else:
-                - G = $\sum_{k=(t+1)-(n-1)}^T \gamma^{k-(t+1)+(n-1)} r_{t+1}[k\%(n+1)]$
-            - $Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)]) += \alpha \cdot [G - Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)])]$
-            - update $\pi(a_t \vert s_t[(t+1-n)\%(n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
+                - $G = \sum_{k=(t+1)-(n-1)}^T \gamma^{k-(t+1)+(n-1)} r_{t+1}[k \bmod (n+1)]$
+            - $Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)]) += \alpha \cdot [G - Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)])]$
+            - update $\pi(a_t \vert s_t[(t+1-n) \bmod (n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
         - t = t + 1
     - until t > T + n - 2
 
@@ -574,35 +574,35 @@ Finally, we can generalize n-step TD/MC methods, where $n \in [1, T]$, as
     - $G_{t+n:t+n}$ = algorithms[name][1]
 2. Iterate
     - generate the initial state $s_0$ of an episode
-    - $s_t$[0] = $s_0$
-    - $a_t$[0] = $b(s_t)$
+    - $s_t[0] = s_0$
+    - $a_t[0] = b(s_t)$
     - T = $\infty$
     - if MC:
         - n = T
     - t = 0
     - repeat
         - if t < T:
-            - take action $a_t$[t%(n+1)]
+            - take action $a_t[t \bmod (n+1)]$
             - observe $s_{t+1}, r_{t+1}$
-            - $s_t$[(t+1)%(n+1)] = $s_{t+1}$
-            - $r_{t+1}$[(t+1)%(n+1)] = $r_{t+1}$
-            - if $s_{t+1}$ == $s_T$:
+            - $s_t[(t+1) \bmod (n+1)] = s_{t+1}$
+            - $r_{t+1}[(t+1) \bmod (n+1)] = r_{t+1}$
+            - if $s_{t+1} == s_T$:
                 - T = t + 1
                 - if MC:
                     - n = T
             - else:
-                - $a_t$[(t+1)%(n+1)] = $b(s_{t+1})$
+                - $a_t[(t+1) \bmod (n+1)] = b(s_{t+1})$
         - if t >= n-1:
             - h = min(t+n-2+$a_{t+n}Used$, T-1)
             - if (t+1)-(n-1) <= h and off-policy:
-                - $\rho$ = $\prod_{k=(t+1)-(n-1)}^{h} \frac{\pi(a_t[k\%(n+1)] \vert s_t[k\%(n+1)])}{b(a_t[k\%(n+1)] \vert s_t[k\%(n+1)])}$
+                - $\rho = \prod_{k=(t+1)-(n-1)}^{h} \frac{\pi(a_t[k \bmod (n+1)] \vert s_t[k \bmod (n+1)])}{b(a_t[k \bmod (n+1)] \vert s_t[k \bmod (n+1)])}$
             - else:
-                - $\rho$ = 1.0
-            - G = $\sum_{k=(t+1)-(n-1)}^{min(t+1, T)} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k\%(n+1)]$
+                - $\rho = 1.0$
+            - $G = \sum_{k=(t+1)-(n-1)}^{min(t+1, T)} \gamma^{k-(t+1)+(n-1)} r_{t+1}[k \bmod (n+1)]$
             - if t < T - 1:
-                - G += $G_{t+n:t+n}(s_t[(t+1)\%(n+1)], a_t[(t+1)\%(n+1)])$
-            - $Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)]) += \alpha \cdot \rho \cdot [G - Q(s_t[(t+1-n)\%(n+1)], a_t[(t+1-n)\%(n+1)])]$
-            - update $\pi(a_t \vert s_t[(t+1-n)\%(n+1)])$, $b(a_t \vert s_t[(t+1-n)\%(n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
+                - $G += G_{t+n:t+n}(s_t[(t+1) \bmod (n+1)], a_t[(t+1) \bmod (n+1)])$
+            - $Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)]) += \alpha \cdot \rho \cdot [G - Q(s_t[(t+1-n) \bmod (n+1)], a_t[(t+1-n) \bmod (n+1)])]$
+            - update $\pi(a_t \vert s_t[(t+1-n) \bmod (n+1)])$, $b(a_t \vert s_t[(t+1-n) \bmod (n+1)])$ following the update rule with respect to $Q(S_t, a_t)$
         - t = t + 1
     - until t > T + n - 2
 

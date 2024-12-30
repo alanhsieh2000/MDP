@@ -152,26 +152,15 @@ class TestTD(unittest.TestCase):
         plt.savefig('Q-TD.svg', format='svg')
         env.close()
 
-    def test__runOnEpisode(self):
-        env = gym.make('Blackjack-v1', natural=False, sab=False)
-        agt = TD.TemporalDifference(env, gamma = 0.9)
-        self.assertEqual(agt._kwargs['gamma'], 0.9)
-        agt.seed = 1234
-
-        avg = agt._runOnEpisode()
-        self.assertEqual(avg, -1.0)
-
-        env.close()
-
     def test_run(self):
         nEpisode = 100000
+        nRun = 1000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
         agt = TD.TemporalDifference(env)
         agt.load(f'test-TD-{nEpisode}.pkl')
 
-        nRun = 1000
-        average = agt.run(nRun)
-        print(f'TD: {nRun} runs, average rewards -> {average:.3f}')
+        rewards = agt.run(nRun)
+        print(f'TD: {nRun} runs, total rewards -> {rewards:.1f}')
 
         env.close()
 

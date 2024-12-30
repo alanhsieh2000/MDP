@@ -189,13 +189,13 @@ class TestMonteCarlo(unittest.TestCase):
 
     def test_run(self):
         nEpisode = 100000
+        nRun = 1000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
         agt = MC.MonteCarlo(env)
         agt.load(f'test-MC-{nEpisode}.pkl')
 
-        nRun = 1000
-        average = agt.run(nRun)
-        print(f'MC: {nRun} runs, average rewards -> {average:.3f}')
+        rewards = agt.run(nRun)
+        print(f'MC: {nRun} runs, total rewards -> {rewards:.1f}')
 
         env.close()
 

@@ -51,22 +51,25 @@ class Agent:
         """
         It returns the action according to its behavior policy.
         """
-        raise NotImplementedError
+        return self._env.action_space.sample()
     
     def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
         """
         It returns the action according to its target policy.
         """
-        raise NotImplementedError
+        return self._env.action_space.sample()
     
     def run(self, nRun: SupportsInt) -> SupportsFloat:
-        average = 0.0
+        """
+        It returns the sum of discounted rewards.
+        """
+        total = 0.0
         if nRun < 1:
-            return average
+            return total
         
         for i in range(nRun):
-            average += (self._runOnEpisode() - average) / (i + 1)
-        return average
+            total += self._runOnEpisode()
+        return total
 
     def save(self, path: str) -> None:
         version = 5
