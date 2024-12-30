@@ -15,11 +15,11 @@ from numpy.typing import NDArray
 ObsType = TypeVar('ObsType')
 ActType = TypeVar('ActType')
 
-class TemporalDifference(agent.Agent):
+class nStepTemporalDifference(agent.Agent):
     """
-    Temporal Difference agents learn in a bootstrapping sense.
+    n-Step Temporal Difference agents learn in a n-step bootstrapping sense.
     """
-    def __init__(self, env: gym.Env[ObsType, ActType], **kwargs: Any) -> None:
+    def __init__(self, env: gym.Env[ObsType, ActType], nStep:SupportsInt, **kwargs: Any) -> None:
         assert(isinstance(env.action_space, gym.spaces.Discrete))
 
         super().__init__(env, **kwargs)
@@ -30,8 +30,9 @@ class TemporalDifference(agent.Agent):
 
         self._Q: defaultdict[ObsType, NDArray] = defaultdict(self._defaultActionValues)
         self._pi: defaultdict[ObsType, NDArray] = defaultdict(self._initTargetPolicy)
-        self._nEpisode: SupportsInt = 0
+        self._nEpisode: int = 0
         self._epsilon: SupportsFloat = 1.0
+        self._nStep: SupportsInt = nStep
     
     def _defaultActionValues(self) -> NDArray:
         return np.zeros(self._env.action_space.n)
@@ -42,21 +43,43 @@ class TemporalDifference(agent.Agent):
         a.fill(1.0 / n)
         return a
     
-    def _updateActionValue(self, state: ObsType, action: ActType, reward: SupportsFloat, nextState: ObsType, nextAction: ActType) -> None:
-        self._Q[state][action] += self._kwargs['alpha'] * (reward + self._kwargs['gamma'] * self._Q[nextState][nextAction] - self._Q[state][action])
-        self._updateTargetPolicy(state)
+    def _updateActionValue(self, states: NDArray, actions: NDArray, rewards: NDArray, t: SupportsInt, T: SupportsInt) -> None:
+        np1 = self._nStep + 1
+        G = 0.0
+        k = (t + 1) - (self._nStep - 1)
+        k_end = min(t + 1, T)
+        gamma = 1.0
+        while k <= k_end:
+            G += gamma * rewards[k % np1]
+            k += 1
+            gamma *= self._kwargs['gamma']
+        if t + 1 < T:
+            i = (t + 1) % np1
+            G += gamma * self._Q[states[i]][actions[i]]
+        i = (t + 1 - self._nStep) % np1
+        self._Q[states[i]][actions[i]] += self._kwargs['alpha'] * (G - self._Q[states[i]][actions[i]])
+        self._updateTargetPolicy(states[i])
         
     def _trainOnEpisode(self) -> None:
-        st, info = self._env.reset(seed=self.seed)
-        at = self.takeAction(st, info)
-        done = False
-        while not done:
-            st1, rt1, terminated, truncated, info = self._env.step(at)
-            at1 = self.takeAction(st1, info)
-            self._updateActionValue(st, at, rt1, st1, at1)
-            st = st1
-            at = at1
-            done = terminated or truncated
+        np1 = self._nStep + 1
+        t = 0
+        T = np.iinfo(np.int64).max
+        st = np.empty(np1, dtype=object)
+        at = np.empty(np1, dtype=object)
+        rt1 = np.empty(np1)
+        st[0], info = self._env.reset(seed=self.seed)
+        at[0] = self.takeAction(st[0], info)
+        while t <= T + self._nStep - 2:
+            if t < T:
+                i = (t + 1) % np1
+                st[i], rt1[i], terminated, truncated, info = self._env.step(at[t % np1])
+                if terminated or truncated:
+                    T = t + 1
+                else:
+                    at[i] = self.takeAction(st[i], info)
+            if t >= self._nStep - 1:
+                self._updateActionValue(st, at, rt1, t, T)
+            t += 1
 
     def _updateTargetPolicy(self, state: ObsType) -> None:
         self._pi[state].fill(self._epsilon / self._pi[state].shape[0])
@@ -73,6 +96,7 @@ class TemporalDifference(agent.Agent):
         parameters.append('_pi')
         parameters.append('_nEpisode')
         parameters.append('_epsilon')
+        parameters.append('_nStep')
         return parameters
 
     def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:

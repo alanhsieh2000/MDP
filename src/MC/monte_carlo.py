@@ -34,7 +34,7 @@ class MonteCarlo(agent.Agent):
         self._Q: defaultdict[ObsType, NDArray] = defaultdict(self._defaultActionValues)
         self._n: defaultdict[tuple[ObsType, ActType], SupportsInt] = defaultdict(int)
         self._pi: defaultdict[ObsType, NDArray] = defaultdict(self._initTargetPolicy)
-        self._nEpisode: int = 0
+        self._nEpisode: SupportsInt = 0
         self._epsilon: SupportsFloat = 1.0
     
     def _defaultActionValues(self) -> NDArray:
@@ -95,7 +95,7 @@ class MonteCarlo(agent.Agent):
     def takeAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
         return self._rng.choice(self._pi[state].shape[0], p=self._pi[state])
     
-    def train(self, nEpisode: int) -> None:
+    def train(self, nEpisode: SupportsInt) -> None:
         for i in range(nEpisode):
             self._nEpisode += 1
             self._generateAnEpisode()

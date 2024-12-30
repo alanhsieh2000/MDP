@@ -13,12 +13,21 @@ docker build -t alan/mdp:1.0.0 .
 docker volume create vol-workspace
 ```
 
+## Unit Test
+After opening a folder or workspace in the development container, clone this git repository and change to the MDP folder. If everything works 
+well, we can run the following unit test successfully.
+```
+/workspace/MDP # python -m unittest -v
+```
+
 # MonteCarlo
-## How to use
 The MonteCarlo class implements an on-policy &epsilon;-Greedy tabular method. Both state and action space has to be discrete. Gymnasium's Toy 
-Text environments like Blackjack, Taxi, Cliff Walking and Frozen Lake could be solved by this class. &epsilon; decays exponentially. Its decay 
-rate can be controlled by keyword arguments of MonteCarlo constructor *epsilonHalfLife*. Both first-visit and every-visit variants of Monte 
-Carlo method are supported. It can be controlled by keyword argument *visit* being 'first' or 'every' (default).
+Text environments like Blackjack, Taxi, Cliff Walking and Frozen Lake could be solved by this class.
+
+## How to use
+Its &epsilon; decays exponentially, and the decay rate can be controlled by keyword arguments of MonteCarlo constructor *epsilonHalfLife*. 
+Both first-visit and every-visit variants of Monte Carlo method are supported. It can be controlled by keyword argument *visit* being 'first' 
+or 'every' (default).
 ```
 import gymnasium as gym
 from src import MC
@@ -59,11 +68,12 @@ clue of insufficient training episodes.
 Figure 1 ~ 4 can be helpful tools to understand whether more training is needed. The code to plot them is included in test cases.
 
 # Temporal Difference
-## How to use
 The TemporalDifference class implements an on-policy TD(0) - Sarsa with &epsilon;-Greedy tabular method. Both state and action space has to 
-be discrete. Gymnasium's Toy Text environments like Blackjack, Taxi, Cliff Walking and Frozen Lake could be solved by this class. &epsilon; 
-decays exponentially. Its decay rate can be controlled by keyword arguments of TemporalDifference constructor *epsilonHalfLife*, and its learning 
-rate can be controlled by keyword argument *alpha*. 
+be discrete. Gymnasium's Toy Text environments like Blackjack, Taxi, Cliff Walking and Frozen Lake could be solved by this class.
+
+## How to use
+Its &epsilon; decays exponentially. Its decay rate can be controlled by keyword arguments of TemporalDifference constructor *epsilonHalfLife*, 
+and its learning rate can be controlled by keyword argument *alpha*. 
 ```
 import gymnasium as gym
 from src import TD
@@ -90,12 +100,52 @@ the target policy can lead to.
 
 ![Figure 5](rewards-TD.svg)
 
-The learned target policy is shown in Figure 6. In some states, not as many as the results of Monte Carlo method, the best action shouldn't 
-be 'stick'. 
+The learned target policy by the Temporal Difference mathod, one step TD or TD(0), is shown in Figure 6. 
 
 ![Figure 6](policy-TD.svg)
 
 ![Figure 7](Q-TD.svg)
+
+# n-step Temporal Difference
+The nStepTemporalDifference class implements an on-policy TD - n-step Sarsa with &epsilon;-Greedy tabular method. Both state and action space 
+has to be discrete. Gymnasium's Toy Text environments like Blackjack, Taxi, Cliff Walking and Frozen Lake could be solved by this class. Unlike 
+the Monte Carlo method, n-step TD doesn't have to wait for the termination of episodes. It bootstraps. And unlike the TD(0) method, n-step TD 
+doesn't have to estimate the state-action value only relying on 1-step rewards. The Monte Carlo and TD(0) methods locate at the two extreme ends, 
+while the n-step TD method is in the middle. n-TD is the same as TD(0) if n is 1, and n-TD is the same as Monte Carlo if n is infinite.
+
+## How to use
+The step size can be assigned by the 2nd positional argument nStep. Its &epsilon; decays exponentially. Its decay rate can be controlled by 
+keyword arguments of nStepTemporalDifference constructor *epsilonHalfLife*, and its learning rate can be controlled by keyword argument *alpha*. 
+```
+import gymnasium as gym
+from src import nTD
+
+# training
+nStep = 2
+env = gym.make('Blackjack-v1', natural=False, sab=False)
+agt = nTD.nStepTemporalDifference(env, nStep)
+agt.train(10000)
+
+# save the trained model
+agt.save('ntd.pkl')
+
+# testing - greedy
+state, info = env.reset()
+action = agt.getAction(state, info)
+
+# load the trained model
+agt.load('ntd.pkl')
+```
+
+## Example - Blackjack
+
+![Figure 8](rewards-nTD.svg)
+
+The learned target policy by the final Temporal Difference method, n-step TD, is shown in Figure 9. 
+
+![Figure 9](policy-nTD.svg)
+
+![Figure 10](Q-nTD.svg)
 
 # Reference
 - Carnegie Mellon University, Fragkiadaki, Katerina, et al. 2024. "10-403 Deep Reinforcement Learning" As of 8 November, 2024. 
