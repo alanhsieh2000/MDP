@@ -17,7 +17,7 @@ ActType = TypeVar('ActType')
 
 class nStepTemporalDifference(agent.Agent):
     """
-    n-Step Temporal Difference agents learn in a n-step bootstrapping sense.
+    n-Step Temporal Difference agents learn in a n-step bootstrapping sense. It's the n-step on-policy Sarsa.
     """
     def __init__(self, env: gym.Env[ObsType, ActType], nStep:SupportsInt, **kwargs: Any) -> None:
         assert(isinstance(env.action_space, gym.spaces.Discrete))

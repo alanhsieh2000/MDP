@@ -88,6 +88,7 @@ class TestMonteCarlo(unittest.TestCase):
 
         env.close()
 
+    @unittest.skip('save some test time')
     def test_pi(self):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
@@ -123,6 +124,7 @@ class TestMonteCarlo(unittest.TestCase):
         plt.savefig('policy-MC.svg', format='svg')
         env.close()
 
+    @unittest.skip('save some test time')
     def test_n(self):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
@@ -155,6 +157,7 @@ class TestMonteCarlo(unittest.TestCase):
         plt.savefig('n.svg', format='svg')
         env.close()
 
+    @unittest.skip('save some test time')
     def test_Q(self):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)

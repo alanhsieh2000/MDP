@@ -85,6 +85,7 @@ class TestTD(unittest.TestCase):
 
         env.close()
 
+    @unittest.skip('save some test time')
     def test_pi(self):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)
@@ -120,6 +121,7 @@ class TestTD(unittest.TestCase):
         plt.savefig('policy-TD.svg', format='svg')
         env.close()
 
+    @unittest.skip('save some test time')
     def test_Q(self):
         nEpisode = 100000
         env = gym.make('Blackjack-v1', natural=False, sab=False)

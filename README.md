@@ -156,6 +156,9 @@ The learned target policy by the final Temporal Difference method, n-step TD, is
 # n-step double Q-Learning
 ![Figure 13](rewards-nDQL.svg)
 
+# n-step off-policy Temporal Difference
+![Figure 14](rewards-nOffTD.svg)
+
 # Reference
 - Carnegie Mellon University, Fragkiadaki, Katerina, et al. 2024. "10-403 Deep Reinforcement Learning" As of 8 November, 2024. 
 https://cmudeeprl.github.io/403website_s24/.

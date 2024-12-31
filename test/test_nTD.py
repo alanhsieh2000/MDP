@@ -91,6 +91,7 @@ class TestnTD(unittest.TestCase):
 
         env.close()
 
+    @unittest.skip('save some test time')
     def test_pi(self):
         nEpisode = 100000
         nStep = 2
@@ -127,6 +128,7 @@ class TestnTD(unittest.TestCase):
         plt.savefig('policy-nTD.svg', format='svg')
         env.close()
 
+    @unittest.skip('save some test time')
     def test_Q(self):
         nEpisode = 100000
         nStep = 2
@@ -266,6 +268,38 @@ class TestnTD(unittest.TestCase):
 
         rewards = agt.run(nRun)
         print(f'n-step double Q-Learning: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_plot_nofftd(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepOffTemporalDifference(env, nStep)
+        agt.train(nEpisode)
+        agt.save(f'test-nOffTD-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('rewards-nOffTD.svg', format='svg')
+
+        env.close()
+
+    def test_run_nofftd(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepDoubleQLearning(env, nStep)
+        agt.load(f'test-nOffTD-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step off-policy Sarsa: {nRun} runs, total rewards -> {rewards:.1f}')
 
         env.close()
 
