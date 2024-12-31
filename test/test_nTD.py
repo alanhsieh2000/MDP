@@ -304,13 +304,79 @@ class TestnTD(unittest.TestCase):
         env.close()
 
     @unittest.skip('save some test time')
+    def test_plot_noffql(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepOffQLearning(env, nStep)
+        agt.train(nEpisode)
+        agt.save(f'test-nOffQL-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('graphics/rewards-nOffQL.svg', format='svg')
+
+        env.close()
+
+    def test_run_noffql(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepOffQLearning(env, nStep)
+        agt.load(f'test-nOffQL-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step off-policy Q-Learning: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_plot_noffesarsa(self):
+        nEpisode = 100000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=nEpisode)
+        agt = nTD.nStepOffExpectedSarsa(env, nStep)
+        agt.train(nEpisode)
+        agt.save(f'test-nOffESarsa-{nEpisode}.pkl')
+
+        fig, axs = plt.subplots()
+        axs.plot(np.convolve(env.return_queue, np.ones(100)/100))
+        axs.set_title('Episode Rewards')
+        axs.set_xlabel('Episode')
+        axs.set_ylabel('Reward')
+        plt.savefig('graphics/rewards-nOffESarsa.svg', format='svg')
+
+        env.close()
+
+    def test_run_noffesarsa(self):
+        nEpisode = 100000
+        nRun = 1000
+        nStep = 2
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agt = nTD.nStepOffExpectedSarsa(env, nStep)
+        agt.load(f'test-nOffESarsa-{nEpisode}.pkl')
+
+        rewards = agt.run(nRun)
+        print(f'n-step off-policy Expected Sarsa: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
     def test_off_pi(self):
         nEpisode = 100000
         nStep = 2
         words = ['Without', 'With', 'Target', 'Behavior']
-        names = ['nOffTD']
+        names = ['nOffTD', 'nOffQL', 'nOffESarsa']
         env = gym.make('Blackjack-v1', natural=False, sab=False)
-        agents = [nTD.nStepOffTemporalDifference(env, nStep)]
+        agents = [nTD.nStepOffTemporalDifference(env, nStep), 
+                  nTD.nStepOffQLearning(env, nStep), 
+                  nTD.nStepOffExpectedSarsa(env, nStep)]
         for index in range(len(names)):
             agt = agents[index]
             agt.load(f'test-{names[index]}-{nEpisode}.pkl')
@@ -319,10 +385,8 @@ class TestnTD(unittest.TestCase):
             for k in range(2):
                 for i in range(1, 11):
                     for j in range(4, 22):
-                        c[k, i-1, j-4] = np.argmax(agt._pi[(j, i, k)])
-                        #c[k, i-1, j-4] = agt._pi[(j, i, k)][1]
-                        c[k+2, i-1, j-4] = np.argmax(agt._b[(j, i, k)])
-                        #c[k+2, i-1, j-4] = agt._b[(j, i, k)][1]
+                        c[k, i-1, j-4] = agt._pi[(j, i, k)][1]
+                        c[k+2, i-1, j-4] = agt._b[(j, i, k)][1]
 
             fig, axs = plt.subplots(4, 1, sharey='all')
             for k in range(4):
@@ -331,15 +395,14 @@ class TestnTD(unittest.TestCase):
                 axs[k].set_ylabel('Dealer showing')
                 axs[k].set_xticks(range(18), labels=[x for x in range(4, 22)])
                 axs[k].set_yticks(range(10), labels=[y for y in range(1, 11)])
-                axs[k].imshow(c[k])
-
-            hit = mpatches.Patch(color='yellow', label='hit')
-            stick = mpatches.Patch(color='purple', label='stick')
-            axs[3].legend(handles=[hit, stick], loc='upper left')
+                pos = axs[k].imshow(c[k], cmap='viridis', vmin=0.4, vmax=0.6)
+                cbar = fig.colorbar(pos, ax=axs[k], ticks=[0.4, 0.5, 0.6])
+                cbar.ax.set_yticklabels(['0.4, stick', '0.5', '0.6, hit'])
 
             fig.set_figheight(12)
             fig.tight_layout()
             plt.savefig(f'graphics/policy-{names[index]}.svg', format='svg')
+            plt.close(fig)
 
         env.close()
 
