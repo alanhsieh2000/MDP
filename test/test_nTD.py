@@ -87,7 +87,7 @@ class TestnTD(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-nTD.svg', format='svg')
+        plt.savefig('graphics/rewards-nTD.svg', format='svg')
 
         env.close()
 
@@ -125,7 +125,7 @@ class TestnTD(unittest.TestCase):
 
         fig.set_figheight(6)
         fig.tight_layout()
-        plt.savefig('policy-nTD.svg', format='svg')
+        plt.savefig('graphics/policy-nTD.svg', format='svg')
         env.close()
 
     @unittest.skip('save some test time')
@@ -159,7 +159,7 @@ class TestnTD(unittest.TestCase):
         fig.subplots_adjust(right=0.9)
         cbar_ax = fig.add_axes([0.91, 0.1, 0.02, 0.75])
         fig.colorbar(im, cax=cbar_ax)
-        plt.savefig('Q-nTD.svg', format='svg')
+        plt.savefig('graphics/Q-nTD.svg', format='svg')
         env.close()
 
     def test_run(self):
@@ -190,7 +190,7 @@ class TestnTD(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-nQL.svg', format='svg')
+        plt.savefig('graphics/rewards-nQL.svg', format='svg')
 
         env.close()
 
@@ -222,7 +222,7 @@ class TestnTD(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-nESarsa.svg', format='svg')
+        plt.savefig('graphics/rewards-nESarsa.svg', format='svg')
 
         env.close()
 
@@ -254,7 +254,7 @@ class TestnTD(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-nDQL.svg', format='svg')
+        plt.savefig('graphics/rewards-nDQL.svg', format='svg')
 
         env.close()
 
@@ -286,7 +286,7 @@ class TestnTD(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-nOffTD.svg', format='svg')
+        plt.savefig('graphics/rewards-nOffTD.svg', format='svg')
 
         env.close()
 
@@ -295,11 +295,51 @@ class TestnTD(unittest.TestCase):
         nRun = 1000
         nStep = 2
         env = gym.make('Blackjack-v1', natural=False, sab=False)
-        agt = nTD.nStepDoubleQLearning(env, nStep)
+        agt = nTD.nStepOffTemporalDifference(env, nStep)
         agt.load(f'test-nOffTD-{nEpisode}.pkl')
 
         rewards = agt.run(nRun)
         print(f'n-step off-policy Sarsa: {nRun} runs, total rewards -> {rewards:.1f}')
+
+        env.close()
+
+    @unittest.skip('save some test time')
+    def test_off_pi(self):
+        nEpisode = 100000
+        nStep = 2
+        words = ['Without', 'With', 'Target', 'Behavior']
+        names = ['nOffTD']
+        env = gym.make('Blackjack-v1', natural=False, sab=False)
+        agents = [nTD.nStepOffTemporalDifference(env, nStep)]
+        for index in range(len(names)):
+            agt = agents[index]
+            agt.load(f'test-{names[index]}-{nEpisode}.pkl')
+
+            c = np.zeros((4, 10, 18))
+            for k in range(2):
+                for i in range(1, 11):
+                    for j in range(4, 22):
+                        c[k, i-1, j-4] = np.argmax(agt._pi[(j, i, k)])
+                        #c[k, i-1, j-4] = agt._pi[(j, i, k)][1]
+                        c[k+2, i-1, j-4] = np.argmax(agt._b[(j, i, k)])
+                        #c[k+2, i-1, j-4] = agt._b[(j, i, k)][1]
+
+            fig, axs = plt.subplots(4, 1, sharey='all')
+            for k in range(4):
+                axs[k].set_title(f'{names[index]} {words[(k // 2) + 2]} Policy: {words[k % 2]} usable ace')
+                axs[k].set_xlabel('Player sum')
+                axs[k].set_ylabel('Dealer showing')
+                axs[k].set_xticks(range(18), labels=[x for x in range(4, 22)])
+                axs[k].set_yticks(range(10), labels=[y for y in range(1, 11)])
+                axs[k].imshow(c[k])
+
+            hit = mpatches.Patch(color='yellow', label='hit')
+            stick = mpatches.Patch(color='purple', label='stick')
+            axs[3].legend(handles=[hit, stick], loc='upper left')
+
+            fig.set_figheight(12)
+            fig.tight_layout()
+            plt.savefig(f'graphics/policy-{names[index]}.svg', format='svg')
 
         env.close()
 

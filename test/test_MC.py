@@ -84,7 +84,7 @@ class TestMonteCarlo(unittest.TestCase):
         axs.set_title('Episode Rewards')
         axs.set_xlabel('Episode')
         axs.set_ylabel('Reward')
-        plt.savefig('rewards-MC.svg', format='svg')
+        plt.savefig('graphics/rewards-MC.svg', format='svg')
 
         env.close()
 
@@ -121,7 +121,7 @@ class TestMonteCarlo(unittest.TestCase):
 
         fig.set_figheight(6)
         fig.tight_layout()
-        plt.savefig('policy-MC.svg', format='svg')
+        plt.savefig('graphics/policy-MC.svg', format='svg')
         env.close()
 
     @unittest.skip('save some test time')
@@ -154,7 +154,7 @@ class TestMonteCarlo(unittest.TestCase):
         fig.subplots_adjust(right=0.9)
         cbar_ax = fig.add_axes([0.91, 0.1, 0.02, 0.75])
         fig.colorbar(im, cax=cbar_ax)
-        plt.savefig('n.svg', format='svg')
+        plt.savefig('graphics/n.svg', format='svg')
         env.close()
 
     @unittest.skip('save some test time')
@@ -187,7 +187,7 @@ class TestMonteCarlo(unittest.TestCase):
         fig.subplots_adjust(right=0.9)
         cbar_ax = fig.add_axes([0.91, 0.1, 0.02, 0.75])
         fig.colorbar(im, cax=cbar_ax)
-        plt.savefig('Q-MC.svg', format='svg')
+        plt.savefig('graphics/Q-MC.svg', format='svg')
         env.close()
 
     def test_run(self):

@@ -52,18 +52,18 @@ agt.load('mc.pkl')
 As shown in Figure 1, the moving average of total episode rewards get improved. The more episodes it learns from, the higher average reward 
 the target policy can lead to. 
 
-![Figure 1](rewards-MC.svg)
+![Figure 1](graphics/rewards-MC.svg)
 
 The learned target policy is shown in Figure 2. In some states, obviously, the best action shouldn't be 'stick'. 
 
-![Figure 2](policy-MC.svg)
+![Figure 2](graphics/policy-MC.svg)
 
 Looking into the private member variable _n and _Q as shown in Figure 3 and 4, we can see those states are seldom or never visited. It's a 
 clue of insufficient training episodes.
 
-![Figure 3](n.svg)
+![Figure 3](graphics/n.svg)
 
-![Figure 4](Q-MC.svg)
+![Figure 4](graphics/Q-MC.svg)
 
 Figure 1 ~ 4 can be helpful tools to understand whether more training is needed. The code to plot them is included in test cases.
 
@@ -98,13 +98,13 @@ agt.load('td.pkl')
 As shown in Figure 5, the moving average of total episode rewards get improved. The more episodes it learns from, the higher average reward 
 the target policy can lead to. 
 
-![Figure 5](rewards-TD.svg)
+![Figure 5](graphics/rewards-TD.svg)
 
 The learned target policy by the Temporal Difference mathod, one step TD or TD(0), is shown in Figure 6. 
 
-![Figure 6](policy-TD.svg)
+![Figure 6](graphics/policy-TD.svg)
 
-![Figure 7](Q-TD.svg)
+![Figure 7](graphics/Q-TD.svg)
 
 # n-step Temporal Difference
 The nStepTemporalDifference class implements an on-policy TD - n-step Sarsa with &epsilon;-Greedy tabular method. Both state and action space 
@@ -139,25 +139,27 @@ agt.load('ntd.pkl')
 
 ## Example - Blackjack
 
-![Figure 8](rewards-nTD.svg)
+![Figure 8](graphics/rewards-nTD.svg)
 
 The learned target policy by the final Temporal Difference method, n-step TD, is shown in Figure 9. 
 
-![Figure 9](policy-nTD.svg)
+![Figure 9](graphics/policy-nTD.svg)
 
-![Figure 10](Q-nTD.svg)
+![Figure 10](graphics/Q-nTD.svg)
 
 # n-step Q-Learning
-![Figure 11](rewards-nQL.svg)
+![Figure 11](graphics/rewards-nQL.svg)
 
 # n-step Expected Sarsa
-![Figure 12](rewards-nESarsa.svg)
+![Figure 12](graphics/rewards-nESarsa.svg)
 
 # n-step double Q-Learning
-![Figure 13](rewards-nDQL.svg)
+![Figure 13](graphics/rewards-nDQL.svg)
 
 # n-step off-policy Temporal Difference
-![Figure 14](rewards-nOffTD.svg)
+![Figure 14](graphics/rewards-nOffTD.svg)
+
+![Figure 15](graphics/policy-nOffTD.svg)
 
 # Reference
 - Carnegie Mellon University, Fragkiadaki, Katerina, et al. 2024. "10-403 Deep Reinforcement Learning" As of 8 November, 2024. 

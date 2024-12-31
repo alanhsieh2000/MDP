@@ -68,6 +68,11 @@ class nStepOffTemporalDifference(nTD.nStepTemporalDifference):
         self._Q[states[i]][actions[i]] += self._kwargs['alpha'] * rho * (G - self._Q[states[i]][actions[i]])
         self._updatePolicy(states[i])
         
+    def _getParameters(self):
+        parameters = super()._getParameters()
+        parameters.append('_b')
+        return parameters
+
     def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
         return self._rng.choice(self._pi[state].shape[0], p=self._pi[state])
 

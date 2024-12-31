@@ -52,5 +52,13 @@ class nStepDoubleQLearning(nTD.nStepTemporalDifference):
         a_ast = np.argmax(self._Q[state] + self._Q2[state])
         self._pi[state][a_ast] += 1 - self._epsilon
 
+    def _getParameters(self):
+        parameters = super()._getParameters()
+        parameters.append('_Q2')
+        return parameters
+
+    def getAction(self, state: ObsType, info: dict[str, Any]) -> ActType:
+        return np.argmax(self._Q[state] + self._Q2[state])
+
 if __name__ == '__main__':
     print('only runs in the top-level')
