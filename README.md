@@ -147,29 +147,15 @@ The learned target policy by the final Temporal Difference method, n-step TD, is
 
 ![Figure 10](graphics/Q-nTD.svg)
 
-# n-step Q-Learning
-![Figure 11](graphics/rewards-nQL.svg)
+# Other n-step Temporal Difference methods
+Some other n-step on-policy Temporal Difference methods, including Q-Learning, expected Sarsa and double Q-Learning, and off-policy Temporal 
+Difference methods, including Sarsa, Q-Learning and expected Sarsa, are also in the src/nTD folder. For off-policy methods, the behavior policy 
+is &epsilon;-soft, and the target policy is &epsilon;-greedy.
 
-# n-step Expected Sarsa
-![Figure 12](graphics/rewards-nESarsa.svg)
+## n-step off-policy Temporal Difference - Sarsa
+Figure 11 shows the differences between the target and behavior policies.
 
-# n-step double Q-Learning
-![Figure 13](graphics/rewards-nDQL.svg)
-
-# n-step off-policy Temporal Difference
-![Figure 14](graphics/rewards-nOffTD.svg)
-
-![Figure 15](graphics/policy-nOffTD.svg)
-
-# n-step off-policy Q-Learning
-![Figure 16](graphics/rewards-nOffQL.svg)
-
-![Figure 17](graphics/policy-nOffQL.svg)
-
-# n-step off-policy Expected Sarsa
-![Figure 14](graphics/rewards-nOffESarsa.svg)
-
-![Figure 15](graphics/policy-nOffESarsa.svg)
+![Figure 11](graphics/policy-nOffTD.svg)
 
 # Reference
 - Carnegie Mellon University, Fragkiadaki, Katerina, et al. 2024. "10-403 Deep Reinforcement Learning" As of 8 November, 2024. 
